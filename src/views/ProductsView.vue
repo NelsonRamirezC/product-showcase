@@ -8,8 +8,9 @@
             <section>
 
                 <div class="row justify-content-evenly g-3">
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3" v-for="product in productsStore.products" :key="product.id">
-                        <ProductCard :product/>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3" v-for="product in productsStore.products"
+                        :key="product.id">
+                        <ProductCard :product />
                     </div>
                 </div>
 
@@ -29,8 +30,8 @@ import { useProductsStore } from '@/stores/products.store';
 const productsStore = useProductsStore();
 
 
-onMounted(() => {
-    //AQUÍ PODEMOS HACER LLAMADOS A LAS APIS Y CARGARLAS EN EL DOM CUANDO SEA NECESARIO
+onMounted(async () => {
+    await productsStore.fetchProducts();
 });
 
 

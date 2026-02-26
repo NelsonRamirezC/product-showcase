@@ -10,6 +10,8 @@
         <div class="navbar-nav ms-auto">
           <RouterLink to="/" class="nav-link">Inicio</RouterLink>
           <RouterLink to="/products" class="nav-link">Productos</RouterLink>
+
+          <RouterLink to="/admin/products" class="nav-link">Crud Productos</RouterLink>
         </div>
       </div>
     </div>
