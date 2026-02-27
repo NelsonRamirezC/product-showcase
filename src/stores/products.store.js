@@ -3,45 +3,51 @@ import { defineStore } from 'pinia'
 
 import { db } from '@/firebaseConfig.js'
 
-import { collection, getDoc, addDoc, updateDoc, deleteDoc, doc, getDocs } from 'firebase/firestore';
+import { collection, getDoc, addDoc, updateDoc, deleteDoc, doc, getDocs } from 'firebase/firestore'
 
 export const useProductsStore = defineStore('products', () => {
+  //ESTADOS
 
+  const categories = ref([
+    { id: 1, name: 'Hogar' },
+    { id: 2, name: 'Cocina' },
+    { id: 3, name: 'Jardín' },
+  ])
 
-	//ESTADOS
+  const products = ref([])
 
-	const categories = ref([
-		{id:1, name: "Hogar"},
-		{id:2, name: "Cocina"},
-		{id:3, name: "Jardín"}
-	]);
+  //GETTERS -> PROPIEDADES COMPUTADAS
+  const quantityProducts = computed(() => products.value.length)
 
+  //MÉTODOS -> ACTIONS
 
-  const products = ref([]);
+  async function fetchProducts() {
+    try {
+      const snap = await getDocs(collection(db, 'products'))
 
+      products.value = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+    } catch (error) {
+      console.log(error)
+      console.log('Error al cargar los datos de firebase...')
+    }
+  }
 
-	//GETTERS -> PROPIEDADES COMPUTADAS
-  const quantityProducts = computed(() => products.value.length);
+  async function addProduct(name, image, price, category, description) {
+    try {
+      let data = { name, image, price, category, description }
+      const docRef = await addDoc(collection(db, 'products'), data)
 
+      products.value.push({ id: docRef.id, ...data })
 
-	//MÉTODOS -> ACTIONS
+      return { success: 'Producto creado con éxito.' }
+    } catch (error) {
 
-	async function fetchProducts(){
+      console.log(error);
 
-		try {
-			
-			const snap = await getDocs(collection(db, "products"));
+      return { error: 'Error al intentar agregar el producto.' }
+    }
+  }
 
-			products.value = snap.docs.map(d => ({id: d.id, ...d.data()}))
-
-		} catch (error) {
-			console.log(error);
-			console.log("Error al cargar los datos de firebase...")
-		}
-
-	} 
-
-
-	//EXPORTACIÓN DE LO QUE QUEREMOS DEJAR PÚBLICO
-  return { categories, products, quantityProducts, fetchProducts}
+  //EXPORTACIÓN DE LO QUE QUEREMOS DEJAR PÚBLICO
+  return { categories, products, quantityProducts, fetchProducts, addProduct }
 })
