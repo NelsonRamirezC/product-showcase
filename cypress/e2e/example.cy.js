@@ -5,4 +5,4 @@ describe('My First Test', () => {
     cy.visit('/')
     cy.contains('h1', 'You did it!')
   })
-})
+});
