@@ -12,12 +12,12 @@ export const useProductsStore = defineStore('products', () => {
     { id: 1, name: 'Hogar' },
     { id: 2, name: 'Cocina' },
     { id: 3, name: 'Jardín' },
-  ])
+  ]);
 
-  const products = ref([])
+  const products = ref([]);
 
   //GETTERS -> PROPIEDADES COMPUTADAS
-  const quantityProducts = computed(() => products.value.length)
+  const quantityProducts = computed(() => products.value.length);
 
   //MÉTODOS -> ACTIONS
 
@@ -69,14 +69,13 @@ export const useProductsStore = defineStore('products', () => {
 
   async function editProduct(name, image, price, category, description, id) {
     try {
+      let data = { name, image, price, category, description }
 
-			let data = { name, image, price, category, description };
+      await updateDoc(doc(db, 'products', id), data)
 
-			await updateDoc(doc(db, 'products', id), data);
+      let indexProduct = products.value.findIndex((p) => p.id == id)
 
-			let indexProduct = products.value.findIndex(p => p.id == id);
-
-			products.value[indexProduct] = {...data, id};
+      products.value[indexProduct] = { ...data, id }
 
       return { success: 'Producto editado con éxito.' }
     } catch (error) {
@@ -86,11 +85,20 @@ export const useProductsStore = defineStore('products', () => {
     }
   }
 
+
+  function filterProductsByCategory(category){
+    return products.value.filter((product) => product.category.toLowerCase() == category.toLowerCase())
+  };
+
+
+  
+
   //EXPORTACIÓN DE LO QUE QUEREMOS DEJAR PÚBLICO
   return {
     categories,
     products,
     quantityProducts,
+    filterProductsByCategory,
     fetchProducts,
     addProduct,
     deleteProduct,
